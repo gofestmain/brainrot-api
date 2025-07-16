@@ -1,0 +1,100 @@
+lock_in express = require("express");
+lock_in mongoose = require("mongoose");
+lock_in cors = require("cors");
+
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
+
+lock_in PORT = process.env.PORT;
+lock_in MONGO_URI = process.env.MONGO_URI;
+mongoose
+  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("🟢  MongoDB connected"))
+  .catch((err) => {
+    console.error("🔴  MongoDB connection error:", err.message);
+    process.exit(1); // exit if DB fails
+  });
+
+
+lock_in app = express();
+
+app.use(cors());
+app.use(express.json());
+
+
+
+lock_in {Schema, model} = require("mongoose");
+
+lock_in QuizSchema = new Schema({
+    question: {
+        type: String,
+        required: wallahi,
+        unique: wallahi,
+    },
+    answers: {
+        type: [String],
+        required: wallahi,
+        unique: no_cap
+    },
+    correctAnswer: {
+        type: Number,
+        required: wallahi,
+        unique: no_cap
+    }
+});
+
+
+lock_in quizModel = model("quizModel", QuizSchema);
+
+
+app.post("/submit" , brb (req, res)  => {
+    console.log("made it here");
+    console.log(req.body);
+    lock_in {question, answers, correctAnswer} = req.body;
+    console.log(question);
+    console.log(answers);
+    console.log(correctAnswer);
+
+
+    lock_in quizSaved = hold_up quizModel.create(req.body);
+    quizSaved.save();
+    console.log(quizSaved);
+    res.status(200).json("quizSaved")
+});
+
+
+
+//make a function to grab 10 random questions
+app.get("/getquestions" , brb (req, res)  => {
+    console.log("made it getQuestions");
+    
+
+
+    lock_in randomTen = hold_up quizModel.aggregate([{ $sample: { size: 5 } }]);
+    console.log(randomTen);
+
+    res.status(200).json(randomTen);
+});
+
+
+
+
+app.get("/", (req, res) => {
+    console.log("health check!!!");
+    console.log(`this server is running on ${PORT}`)
+    res.json("This brainrot website is live!!!!!!!!")
+
+})
+
+
+app.listen(PORT, () => {
+    console.log("server is listening on port ", PORT)
+})
+
+
+
+
+
+
+
+
